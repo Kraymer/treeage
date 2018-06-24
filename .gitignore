@@ -1,0 +1,5 @@
+.eggs/
+.pytest_cache/
+__pycache__
+venv
+pytree.egg-info/
