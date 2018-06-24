@@ -4,14 +4,14 @@
     pytree <dir>
     pytree -h | --help | --version
 """
-__version__ = '1.0.0'
-import core as tree
+import pytree.core as pytree
+import pytree.__version__ as version
 
 def main():
     from docopt import docopt
-    arguments = docopt(__doc__, version=__version__)
+    arguments = docopt(__doc__, version=version.__version__)
     dir_name = arguments['<dir>'] 
-    print('\n'.join(tree.render_tree(tree.tree_format('', dir_name))))
+    print('\n'.join(pytree.render_tree(pytree.tree_format('', dir_name))))
 
 if __name__ == "__main__":
     main()
