@@ -1,5 +1,7 @@
 """
 test_pytree.py
 """
-def test_fix_me():
-    assert 1 == 0
+import pytree.core as pytree
+
+def test_tree_format():
+    assert pytree.tree_format('tests', 'fixtures') == {'name': 'fixtures', 'children': []}
