@@ -1,26 +1,37 @@
+# -*- coding: utf-8 -*-
+"""
+pytree implementation
+1. tree_format
+2. render_tree
+"""
 import os
 import functools as fp
 
 I_branch = "│   "
 T_branch = "├── "
 L_branch = "└── "
-SPACER   = "    "
+SPACER = "    "
+
 
 def _children(path):
     return map(lambda filename: tree_format(path, filename), os.listdir(path))
 
+
 def tree_format(parent, dir_name):
     path = os.path.join(parent, dir_name)
-    is_file = os.path.isfile(path) 
+    is_file = os.path.isfile(path)
     children = [] if is_file else _children(path)
     return {'name': dir_name, 'children': list(children)}
+
 
 def render_tree(tr):
     name = tr['name']
     children = tr['children']
-    return [name] + fp.reduce(lambda l, r: l + r, 
-                           map(lambda arg: render(len(children))(*arg), enumerate(children)), 
-                           [])
+    return [name] + fp.reduce(lambda l, r: l + r,
+                              map(lambda arg: render(len(children))(*arg),
+                                  enumerate(children)),
+                              [])
+
 
 def render(length):
     def prefix(index, child):
