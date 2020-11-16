@@ -3,5 +3,4 @@
 .envrc
 .pytest_cache/
 __pycache__
-pytree.egg-info/
 venv

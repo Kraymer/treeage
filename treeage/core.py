@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-pytree implementation
-1. tree_format
-2. render_tree
-"""
+
 import arrow
 import blessed
 import os

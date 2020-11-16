@@ -1,43 +1,66 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-setup pytree deps
-"""
-from setuptools import setup, find_packages
-from codecs import open as c_open
+
+# Copyright (c) 2020 Fabrice Laporte - kray.me
+# The MIT License http://www.opensource.org/licenses/mit-license.php
+
+import codecs
 import os
+import re
+import sys
+import time
+from setuptools import setup
 
-here = os.path.abspath(os.path.dirname(__file__))
+try:
+    from semantic_release import setup_hook
 
-about = {}
-with c_open(os.path.join(here, 'pytree', '__version__.py'), 'r', 'utf-8') as f:
-    exec(f.read(), about)
+    setup_hook(sys.argv)
+except ImportError:
+    pass
 
-with c_open('README.md') as f:
-    _readme = f.read()
 
-with c_open('LICENSE') as f:
-    _license = f.read()
+PKG_NAME = "treeage"
+DIRPATH = os.path.dirname(__file__)
 
+
+def read_rsrc(filename):
+    """Return content of filename. 
+       Remove emojis and badges from README.rst
+    """
+    with codecs.open(os.path.join(DIRPATH, filename), encoding="utf-8") as _file:
+        res = _file.read()
+        if filename == "README.rst":
+            sentinel = "$pypi-body$"
+            res = re.sub(r":(\w+\\?)+:", u"", res.split(sentinel)[-1].strip())
+        return res
+
+
+with codecs.open("treeage/__init__.py", encoding="utf-8") as fd:
+    version = re.search(
+        r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', fd.read(), re.MULTILINE
+    ).group(1)
+    version = version.replace("dev", str(int(time.time())))
+
+# Deploy: python3 setup.py sdist bdist_wheel; twine upload --verbose dist/*
 setup(
-    name='pytree',
-    version=about['__version__'],
-    description='list contents of directories in a tree-like format.',
-    long_description=_readme,
-    author='Yan Qian',
-    author_email='qianyan.lambda@gmail.com',
-    url='https://github.com/qianyan/pytree',
-    license=_license,
-    # include all packages under pytree
-    packages=find_packages(exclude=('tests', 'docs')),
-    classifiers=["Programming Language :: Python :: 3",
-                 "License :: OSI Approved :: MIT License",
-                 "Operating System :: OS Independent"],
-    setup_requires=['pytest-runner'],
-    tests_require=['pytest'],
-    entry_points={
-        'console_scripts': [
-            'pytree = pytree.cli:main'
-        ]
-    },
-    install_requires=['docopt==0.6.2']
+    name=PKG_NAME,
+    version=version,
+    description="Lists contents of directories in a tree-like format with age metric indicated for each file",
+    long_description=read_rsrc("README.rst"),
+    author="Fabrice Laporte",
+    author_email="kraymer@gmail.com",
+    url="https://github.com/KraYmer/treeage",
+    license="MIT",
+    platforms="ALL",
+    packages=["treeage",],
+    entry_points={"console_scripts": ["treeage = treeage:treeage_cli"]},
+    install_requires=read_rsrc("requirements.txt").split("\n"),
+    extras_require={"test": ["coverage>=5,<6", "nose>1.3", "tox>=3",]},
+    classifiers=[
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python",
+        "Environment :: Console",
+        "Topic :: System :: Filesystems",
+    ],
+    keywords="git",
 )

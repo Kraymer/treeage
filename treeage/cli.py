@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin env python3
-"""list contents of directories in a tree-like format.
-  Usage:
-    pytree <dir>
-    pytree -h | --help | --version
-"""
+
 import blessed
-from pytree import core
+from treeage import core
 
 
 def main():
