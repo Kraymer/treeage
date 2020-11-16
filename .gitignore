@@ -1,5 +1,7 @@
+.direnv/
 .eggs/
+.envrc
 .pytest_cache/
 __pycache__
-venv
 pytree.egg-info/
+venv

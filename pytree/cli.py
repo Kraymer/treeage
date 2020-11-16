@@ -5,19 +5,21 @@
     pytree <dir>
     pytree -h | --help | --version
 """
-import pytree.core as pytree
-import pytree.__version__ as version
+import blessed
+from pytree import core
 
 
 def main():
     """
     main entry point
     """
-    from docopt import docopt
-    arguments = docopt(__doc__, version=version.__version__)
-    dir_name = arguments['<dir>']
-    print('\n'.join(pytree.render_tree(pytree.tree_format('', dir_name))))
+    tree = core.tree_format("", "../../jlmcc/apps")
+    tree_rendered = core.render_tree(tree)
+    tree_date = core.prefix_date(tree_rendered)
+    print("\n".join(tree_date))
 
 
 if __name__ == "__main__":
     main()
+    # for x in range(100):
+    #     print(term.on_color_rgb(x, x, x)("a"))
