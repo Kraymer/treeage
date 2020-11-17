@@ -80,7 +80,9 @@ def render_date(date):
         gray_level = 0
 
     date_human = arrow.get(date).humanize(only_distance=True)
-    return term.on_color_rgb(gray_level, gray_level, gray_level)(date_human[:4])
+    font_color = term.white if gray_level < rgb_max/2.0 else term.black
+    date_shortcut = " ".join([x[:3] for x in date_human.split()]).ljust(6)
+    return font_color(term.on_color_rgb(gray_level, gray_level, gray_level)(date_shortcut))
 
 
 def prefix_date(tree):
@@ -98,5 +100,5 @@ def prefix_date(tree):
         if fullpath in all_dates:
             res.append("{} {}".format(render_date(all_dates[fullpath]), line))
         else:
-            res.append("     " + line)
+            res.append("       " + line)
     return res
