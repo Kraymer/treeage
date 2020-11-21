@@ -2,9 +2,8 @@
 # !/usr/bin env python3
 
 import os
-import blessed
 import click
-from treeage import core
+from treeage.core import TreeageCore
 
 
 @click.command(
@@ -14,10 +13,7 @@ from treeage import core
 @click.argument("directory", type=click.Path(exists=True), nargs=1)
 def treeage_cli(directory):
     directory = os.path.abspath(directory)
-    tree = core.tree_format("", directory)
-    tree_rendered = core.render_tree(tree)
-    tree_date = core.prefix_date(tree_rendered)
-    print("\n".join(tree_date))
+    TreeageCore(directory)
 
 
 if __name__ == "__main__":
