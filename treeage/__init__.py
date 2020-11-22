@@ -11,9 +11,12 @@ from treeage.core import TreeageCore
     help="Lists contents of directories in a tree-like format with age metric indicated for each file",
 )
 @click.argument("directory", type=click.Path(exists=True), nargs=1)
-def treeage_cli(directory):
+@click.option("--fast/--no-fast", default=False)
+@click.option("--maxdepth", default=-1)
+def treeage_cli(directory, fast, maxdepth):
     directory = os.path.abspath(directory)
-    TreeageCore(directory)
+
+    TreeageCore(directory, fast, maxdepth)
 
 
 if __name__ == "__main__":

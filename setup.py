@@ -24,8 +24,8 @@ DIRPATH = os.path.dirname(__file__)
 
 
 def read_rsrc(filename):
-    """Return content of filename. 
-       Remove emojis and badges from README.rst
+    """Return content of filename.
+    Remove emojis and badges from README.rst
     """
     with codecs.open(os.path.join(DIRPATH, filename), encoding="utf-8") as _file:
         res = _file.read()
@@ -52,10 +52,18 @@ setup(
     url="https://github.com/KraYmer/treeage",
     license="MIT",
     platforms="ALL",
-    packages=["treeage",],
+    packages=[
+        "treeage",
+    ],
     entry_points={"console_scripts": ["treeage = treeage:treeage_cli"]},
     install_requires=read_rsrc("requirements.txt").split("\n"),
-    extras_require={"test": ["coverage>=5,<6", "nose>1.3", "tox>=3",]},
+    extras_require={
+        "test": [
+            "coverage>=5,<6",
+            "nose>1.3",
+            "tox>=3",
+        ]
+    },
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python",

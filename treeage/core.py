@@ -1,21 +1,24 @@
 # -*- coding: utf-8 -*-
 
 import arrow
-import blessed
 import os
 import math
 import re
 import functools as fp
+from statistics import mean
 
 from pathlib import Path
 from git import Repo
+from pydriller import RepositoryMining, GitRepository
+
+from treeage import terminal
 
 I_branch = "│   "
 T_branch = "├── "
 L_branch = "└── "
 SPACER = "    "
 
-term = blessed.Terminal()
+term = terminal.Terminal()
 all_dates = {}
 
 
@@ -34,14 +37,31 @@ def list_paths(root_tree, path=Path(".")):
         yield from list_paths(tree, path / tree.name)
 
 
-class TreeageCore():
-    def __init__(self, dirpath):
-        """Render aged tree for dirpath
-        """
-        self.repo_path = repo_path_for(dirpath)
+def path_depth(root, filepath):
+    """Get the depth of filepath from the root"""
+    depth = 0
+    if filepath:
+        rel_path = os.path.relpath(filepath, root)
+        if rel_path != ".":
+            depth += 1
+        depth += rel_path.count(os.path.sep)
+    return depth
+
+
+class TreeageCore:
+    def __init__(self, root, fast, maxdepth):
+        """Render aged tree for dirpath"""
+        self.maxdepth = maxdepth
+        self.fast = fast
+        self.root = root
+        self.repo_path = repo_path_for(self.root)
         self.repo = Repo(self.repo_path)
-        self.repo_files = [str(x) for x in list_paths(self.repo.tree())]
-        tree = self.tree_format("", dirpath)
+        self.repo_driller = GitRepository(self.repo_path)
+        self.repo_files = set(
+            os.path.join(self.repo_path, str(x)) for x in list_paths(self.repo.tree())
+        )
+        self.repo_files |= set([os.path.dirname(x) for x in self.repo_files])
+        tree = self.tree_format("", self.root)
         tree_rendered = self.render_tree(tree)
         tree_aged_rendered = self.prefix_date(tree_rendered)
         print("\n".join(tree_aged_rendered))
@@ -50,40 +70,49 @@ class TreeageCore():
         """Return list of trees for path children"""
         if os.path.isfile(path):
             return []
-        return [self.tree_format(path, fname) for fname in os.listdir(path)]
+        paths = (
+            set(os.path.join(path, fname) for fname in os.listdir(path))
+            & self.repo_files
+        )
+        return [
+            self.tree_format(path, os.path.basename(fname)) for fname in sorted(paths)
+        ]
 
     def _date(self, path):
         """Return estimated date of filepath by averaging editing dates of each
-           line.
+        line.
         """
-        if os.path.isfile(path) and path.endswith(".py"):
+        print(u"processing {}".format(path), end="")
+        print(term.clear_last)
+        if os.path.isfile(path) and path.endswith(".py") and path in self.repo_files:
             lines_dates = []
-            relative_filename = path.split(self.repo_path)[-1].strip("/")
-            if relative_filename in self.repo_files:
-
+            if not self.fast:
                 try:
-                    for commit, lines in self.repo.blame('HEAD', path):
+                    for commit, lines in self.repo.blame("HEAD", path):
                         if any(lines):
                             lines_dates.extend([commit.committed_date] * len(lines))
                 except Exception as e:
                     print(e)
                     pass
             if lines_dates:
-                filedate = sum(lines_dates) / len(lines_dates)
-            else:
-                filedate = os.stat(path).st_ctime
+                filedate = mean(lines_dates)
+            else:  # time of most recent content modification.
+                filedate = os.stat(path).st_mtime
             all_dates[path] = filedate
             return filedate
 
     def tree_format(self, parent, dir_name):
-        """Return tree for dir_name
-        """
+        """Return tree for dir_name"""
+        depth = path_depth(self.root, parent)
         path = os.path.join(parent, dir_name)
-        return {"name": dir_name, "children": self._children(path), "date": self._date(path)}
+        children = []
+        if not parent or depth < self.maxdepth:
+            children = self._children(path)
+        res = {"name": dir_name, "children": children, "date": self._date(path)}
+        return res
 
     def render_tree(self, tree):
-        """Render tree
-        """
+        """Render tree"""
         name = tree["name"]
         children = tree["children"]
         res = [name] + fp.reduce(
@@ -95,8 +124,7 @@ class TreeageCore():
 
     def render(self, length):
         def prefix(index, child):
-            """Render a tree element
-            """
+            """Render a tree element"""
             is_last = index == length - 1
             prefix_first = L_branch if is_last else T_branch
             prefix_rest = SPACER if is_last else I_branch
@@ -109,8 +137,7 @@ class TreeageCore():
         return prefix
 
     def render_date(self, date):
-        """Return color for dates based on all dates
-        """
+        """Return color for dates based on all dates"""
         if not date:
             return ""
         rgb_max = 255
@@ -120,7 +147,9 @@ class TreeageCore():
         step_lin = (max_date - min_date) / rgb_max
         try:
             gray_level_lin = int((date - min_date) / step_lin)
-            gray_level = int(gray_level_lin * math.log(gray_level_lin) / math.log(rgb_max))
+            gray_level = int(
+                gray_level_lin * math.log(gray_level_lin) / math.log(rgb_max)
+            )
         except ValueError:
             gray_level = 0
         except ZeroDivisionError:
@@ -129,11 +158,12 @@ class TreeageCore():
         date_human = arrow.get(date).humanize(only_distance=True)
         font_color = term.white if gray_level < rgb_max / 2.0 else term.black
         date_shortcut = " ".join([x[:3] for x in date_human.split()]).ljust(6)
-        return font_color(term.on_color_rgb(gray_level, gray_level, gray_level)(date_shortcut))
+        return font_color(
+            term.on_color_rgb(gray_level, gray_level, gray_level)(date_shortcut)
+        )
 
     def prefix_date(self, tree):
-        """Return rendered tree obtained by prefixing each element by its color
-        """
+        """Return rendered tree obtained by prefixing each element by its color"""
         walk = {}
         res = []
 
