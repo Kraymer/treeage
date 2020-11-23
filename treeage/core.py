@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import arrow
+import glob
 import os
 import math
 import re
@@ -59,13 +60,13 @@ def abbr_date(date):
 
 
 class TreeageCore:
-    def __init__(self, root, fast, maxdepth):
+    def __init__(self, root, maxdepth, include_glob):
         """Render aged tree for dirpath"""
         self.maxdepth = maxdepth
-        self.fast = fast
         self.root = root
         self.repo_path = repo_path_for(self.root)
         self.repo = Repo(self.repo_path)
+        self.glob = include_glob
         self.repo_driller = GitRepository(self.repo_path)
         self.repo_files = set(
             os.path.join(self.repo_path, str(x)) for x in list_paths(self.repo.tree())
@@ -74,16 +75,20 @@ class TreeageCore:
         tree = self.tree_format("", self.root)
         tree_rendered = self.render_tree(tree)
         tree_aged_rendered = self.prefix_date(tree_rendered)
+        print(term.clear_last)
         print("\n".join(tree_aged_rendered))
 
     def _children(self, path):
         """Return list of trees for path children"""
         if os.path.isfile(path):
             return []
-        paths = (
-            set(os.path.join(path, fname) for fname in os.listdir(path))
-            & self.repo_files
+        children = set(
+            [x for x in os.listdir(path) if os.path.isdir(os.path.join(path, x))]
         )
+        children |= set(
+            glob.iglob(os.path.join(path, self.glob)) if self.glob else os.listdir(path)
+        )
+        paths = set(os.path.join(path, fname) for fname in children) & self.repo_files
         return [
             self.tree_format(path, os.path.basename(fname)) for fname in sorted(paths)
         ]
@@ -94,16 +99,15 @@ class TreeageCore:
         """
         print(u"processing {}".format(path), end="")
         print(term.clear_last)
-        if os.path.isfile(path) and path.endswith(".py") and path in self.repo_files:
+        if os.path.isfile(path) and path in self.repo_files:
             lines_dates = []
-            if not self.fast:
-                try:
-                    for commit, lines in self.repo.blame("HEAD", path):
-                        if any(lines):
-                            lines_dates.extend([commit.committed_date] * len(lines))
-                except Exception as e:
-                    print(e)
-                    pass
+            try:
+                for commit, lines in self.repo.blame("HEAD", path):
+                    if any(lines):
+                        lines_dates.extend([commit.committed_date] * len(lines))
+            except Exception as e:
+                print(e)
+                pass
             if lines_dates:
                 filedate = mean(lines_dates)
             else:  # time of most recent content modification.
