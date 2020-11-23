@@ -48,6 +48,16 @@ def path_depth(root, filepath):
     return depth
 
 
+def abbr_date(date):
+    """Convert date to human abbreviated format"""
+    date_human = arrow.get(date).humanize(only_distance=True)
+    # date_human = re.sub(r"years?", "y", date_human)
+    date_human = re.sub(r"months?", "mon", date_human)
+    # date_human = re.sub(r"minutes?", "min", date_human)
+    date_human = re.sub(r"^a ", "1 ", date_human)
+    return date_human[:6].rjust(6)
+
+
 class TreeageCore:
     def __init__(self, root, fast, maxdepth):
         """Render aged tree for dirpath"""
@@ -155,11 +165,11 @@ class TreeageCore:
         except ZeroDivisionError:
             gray_level = rgb_max
 
-        date_human = arrow.get(date).humanize(only_distance=True)
         font_color = term.white if gray_level < rgb_max / 2.0 else term.black
-        date_shortcut = " ".join([x[:3] for x in date_human.split()]).ljust(6)
+
+        date_abbr = abbr_date(date)
         return font_color(
-            term.on_color_rgb(gray_level, gray_level, gray_level)(date_shortcut)
+            term.on_color_rgb(gray_level, gray_level, gray_level)(date_abbr)
         )
 
     def prefix_date(self, tree):
