@@ -24,15 +24,8 @@ DIRPATH = os.path.dirname(__file__)
 
 
 def read_rsrc(filename):
-    """Return content of filename.
-    Remove emojis and badges from README.rst
-    """
     with codecs.open(os.path.join(DIRPATH, filename), encoding="utf-8") as _file:
-        res = _file.read()
-        if filename == "README.rst":
-            sentinel = "$pypi-body$"
-            res = re.sub(r":(\w+\\?)+:", u"", res.split(sentinel)[-1].strip())
-        return res
+        return re.sub(r":(\w+\\?)+:", u"", _file.read().strip())  # no emoji
 
 
 with codecs.open("treeage/__init__.py", encoding="utf-8") as fd:

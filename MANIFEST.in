@@ -1,0 +1,5 @@
+# Include relevant text files.
+include LICENSE README.rst requirements.txt
+
+# Exclude junk.
+global-exclude
