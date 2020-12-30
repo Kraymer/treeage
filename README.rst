@@ -17,6 +17,11 @@ treeage
 
 ``treeage`` display is typically used to shed some light on antiquated parts of a codebase and identify candidates for a refactoring.
 
+Install
+-------
+
+`treeage` is written for Python 3.5+, install with pip via ``pip3 install treeage`` command.
+
 Usage
 -----
 
