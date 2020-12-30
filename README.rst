@@ -47,4 +47,4 @@ Usage
 Screenshot
 ----------
 
-.. image:: docs/screenshot.png
+.. image:: https://github.com/Kraymer/treeage/blob/master/docs/screenshot.png
