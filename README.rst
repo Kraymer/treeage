@@ -17,7 +17,7 @@ treeage
     | 1. *n.* a process in which things are ranked in terms of importance or priority.
     | 2. *n.* software that lists contents of directories in a tree-like format with age metric indicated for each file
 
-``treeage`` display is typically used to shed some light on antiquated parts of a codebase and identify candidates for a refactoring.
+``treeage`` is typically used to shed some light on antiquated parts [#f1]_ of a codebase and identify candidates for a refactoring.
 
 Install
 -------
@@ -48,3 +48,9 @@ Screenshot
 ----------
 
 .. image:: https://github.com/Kraymer/treeage/blob/master/docs/screenshot.png
+
+----
+
+.. rubric:: 
+
+.. [#f1] file age is computed by averaging last modification date of its lines
