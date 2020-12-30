@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
-# !/usr/bin env python3
+
+"""Lists contents of directories in a tree-like format with age metric indicated for each file.
+"""
 
 import os
 import click
 from treeage.core import TreeageCore
 
+__version__ = "0.0.1"
+
 
 @click.command(
     context_settings=dict(help_option_names=["-h", "--help"]),
-    help="Lists contents of directories in a tree-like format with age metric indicated for each file",
+    help=__doc__,
 )
 @click.argument("directory", type=click.Path(exists=True), nargs=1)
 @click.option(
@@ -29,4 +33,4 @@ from treeage.core import TreeageCore
 def treeage_cli(directory, maxdepth, include_glob):
     directory = os.path.abspath(directory)
 
-    TreeageCore(directory, maxdepth, include_glob)
+    TreeageCore(directory, maxdepth, include_glob).dump()
