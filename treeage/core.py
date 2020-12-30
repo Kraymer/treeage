@@ -11,7 +11,6 @@ from statistics import mean
 
 from pathlib import Path
 from git import Repo
-from pydriller import RepositoryMining, GitRepository
 
 from treeage import terminal
 
