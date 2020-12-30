@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import arrow
 import glob
+import logging
 import os
 import math
 import re
 import functools as fp
+from pathlib import Path
 from statistics import mean
 
-from pathlib import Path
+import arrow
 from git import Repo
 
 from treeage import terminal
@@ -19,16 +20,22 @@ T_branch = "├── "
 L_branch = "└── "
 SPACER = "    "
 
+logger = logging.getLogger(__name__)
 term = terminal.Terminal()
 all_dates = {}
 
 
 def repo_path_for(filename):
     """Go up filename path and returns path of first repository met."""
-    while filename:
-        filename = os.path.dirname(filename)
-        if os.path.exists(os.path.join(filename, ".git")):
-            return filename
+
+    current_path = filename
+    while current_path != "/":
+        if os.path.exists(os.path.join(current_path, ".git")):
+            return current_path
+        current_path = os.path.dirname(current_path)
+
+    logger.error("'{}' is not tracked by a git repository".format(filename))
+    exit(1)
 
 
 def list_paths(root_tree, path=Path(".")):
