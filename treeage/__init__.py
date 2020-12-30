@@ -3,11 +3,18 @@
 """Lists contents of directories in a tree-like format with age metric indicated for each file.
 """
 
+import logging
 import os
+
 import click
+import click_log
+
 from treeage.core import TreeageCore
 
 __version__ = "0.0.1"
+
+logger = logging.getLogger(__name__)
+click_log.basic_config(logger)
 
 
 @click.command(
@@ -30,7 +37,8 @@ __version__ = "0.0.1"
     metavar="GLOB",
     help=("Search only files whose base name matches GLOB (using wildcard matching)"),
 )
+@click_log.simple_verbosity_option(logger)
+@click.version_option(__version__)
 def treeage_cli(directory, maxdepth, include_glob):
     directory = os.path.abspath(directory)
-
     TreeageCore(directory, maxdepth, include_glob).dump()
