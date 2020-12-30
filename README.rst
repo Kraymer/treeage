@@ -4,6 +4,8 @@
 .. image:: https://coveralls.io/repos/github/Kraymer/treeage/badge.svg?branch=main
    :target: https://coveralls.io/github/Kraymer/treeage
 
+.. pypi
+
 treeage
 =======
 
@@ -19,14 +21,17 @@ Usage
 
 ::
 
-    Usage: treeage.py [OPTIONS] DIRECTORY   
+    Usage: treeage.py [OPTIONS] DIRECTORY    
 
       Lists contents of directories in a tree-like format with age metric
-      indicated for each file   
+      indicated for each file.    
 
     Options:
       --maxdepth LEVELS  Descend at most LEVELS (a non-negative integer) levels of
-                         directories below the seed DIRECTORY   
+                         directories below the seed DIRECTORY    
 
       --include GLOB     Search only files whose base name matches GLOB (using
-                         wildcard matching)
+                         wildcard matching)    
+
+      -h, --help         Show this message and exit.    
+
