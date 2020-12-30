@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import arrow
@@ -32,6 +33,7 @@ def repo_path_for(filename):
 
 
 def list_paths(root_tree, path=Path(".")):
+    """Return paths contained in a git repo tree"""
     for blob in root_tree.blobs:
         yield path / blob.name
     for tree in root_tree.trees:
@@ -56,7 +58,7 @@ def abbr_date(date):
     date_human = re.sub(r"months?", "mon", date_human)
     # date_human = re.sub(r"minutes?", "min", date_human)
     date_human = re.sub(r"^a ", "1 ", date_human)
-    return date_human[:6].rjust(6)
+    return date_human
 
 
 class TreeageCore:
@@ -67,16 +69,17 @@ class TreeageCore:
         self.repo_path = repo_path_for(self.root)
         self.repo = Repo(self.repo_path)
         self.glob = include_glob
-        self.repo_driller = GitRepository(self.repo_path)
         self.repo_files = set(
             os.path.join(self.repo_path, str(x)) for x in list_paths(self.repo.tree())
         )
         self.repo_files |= set([os.path.dirname(x) for x in self.repo_files])
         tree = self.tree_format("", self.root)
         tree_rendered = self.render_tree(tree)
-        tree_aged_rendered = self.prefix_date(tree_rendered)
+        self.rendering = self.prefix_date(tree_rendered)
+
+    def dump(self):
         print(term.clear_last)
-        print("\n".join(tree_aged_rendered))
+        print("\n".join(self.rendering))
 
     def _children(self, path):
         """Return list of trees for path children"""
@@ -171,7 +174,7 @@ class TreeageCore:
 
         font_color = term.white if gray_level < rgb_max / 2.0 else term.black
 
-        date_abbr = abbr_date(date)
+        date_abbr = abbr_date(date)[:6].rjust(6)
         return font_color(
             term.on_color_rgb(gray_level, gray_level, gray_level)(date_abbr)
         )
