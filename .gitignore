@@ -1,6 +1,9 @@
+*.egg-info/
+*.pyc
 .direnv/
 .eggs/
 .envrc
 .pytest_cache/
+.tox
 __pycache__
 venv
