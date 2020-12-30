@@ -56,7 +56,7 @@ def abbr_date(date):
     # date_human = re.sub(r"years?", "y", date_human)
     date_human = re.sub(r"months?", "mon", date_human)
     # date_human = re.sub(r"minutes?", "min", date_human)
-    date_human = re.sub(r"^a ", "1 ", date_human)
+    date_human = re.sub(r"^an? ", "1 ", date_human)
     return date_human
 
 
