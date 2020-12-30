@@ -1,38 +1,35 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2020 Fabrice Laporte - kray.me
+# Copyright (c) 2020-2021 Fabrice Laporte - kray.me
 # The MIT License http://www.opensource.org/licenses/mit-license.php
 
 import codecs
 import os
 import re
-import sys
-import time
 from setuptools import setup
-
-try:
-    from semantic_release import setup_hook
-
-    setup_hook(sys.argv)
-except ImportError:
-    pass
 
 
 PKG_NAME = "treeage"
 DIRPATH = os.path.dirname(__file__)
 
 
-def read_rsrc(filename):
+def read_rsrc(filename, pypi_compat=False):
+    """Return content of filename.
+    If pypi_compat is True, remove emojis and anything preceding
+    `.. pypi` comment if present.
+    """
     with codecs.open(os.path.join(DIRPATH, filename), encoding="utf-8") as _file:
-        return re.sub(r":(\w+\\?)+:", u"", _file.read().strip())  # no emoji
+        data = _file.read().strip()
+        if pypi_compat or filename == "README.rst":
+            data = re.sub(r":(\w+\\?)+:", u"", data[data.find(".. pypi") :] or data)
+    return data
 
 
-with codecs.open("treeage/__init__.py", encoding="utf-8") as fd:
+with codecs.open("{}/__init__.py".format(PKG_NAME), encoding="utf-8") as fd:
     version = re.search(
         r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', fd.read(), re.MULTILINE
     ).group(1)
-    version = version.replace("dev", str(int(time.time())))
 
 # Deploy: python3 setup.py sdist bdist_wheel; twine upload --verbose dist/*
 setup(
@@ -52,8 +49,8 @@ setup(
     install_requires=read_rsrc("requirements.txt").split("\n"),
     extras_require={
         "test": [
-            "coverage>=5,<6",
-            "nose>1.3",
+            "coverage>5",
+            "pytest>=6",
             "tox>=3",
         ]
     },
