@@ -36,3 +36,8 @@ Usage
 
       -h, --help         Show this message and exit.    
 
+
+Screenshot
+----------
+
+.. image:: docs/screenshot.png
