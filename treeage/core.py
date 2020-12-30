@@ -122,7 +122,7 @@ class TreeageCore:
         depth = path_depth(self.root, parent)
         path = os.path.join(parent, dir_name)
         children = []
-        if not parent or depth < self.maxdepth:
+        if not parent or self.maxdepth < 0 or depth < self.maxdepth:
             children = self._children(path)
         res = {"name": dir_name, "children": children, "date": self._date(path)}
         return res
