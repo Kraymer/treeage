@@ -22,7 +22,6 @@ SPACER = "    "
 
 logger = logging.getLogger(__name__)
 term = terminal.Terminal()
-all_dates = {}
 
 
 def repo_path_for(filename):
@@ -68,9 +67,12 @@ def abbr_date(date):
 
 
 class TreeageCore:
-    def __init__(self, root, maxdepth, include_glob):
+    def __init__(self, root, maxdepth, include_glob, before, after):
         """Render aged tree for dirpath"""
+        self.all_dates = {}
         self.maxdepth = maxdepth
+        self.before = before
+        self.after = after
         self.root = root
         self.repo_path = repo_path_for(self.root)
         self.repo = Repo(self.repo_path)
@@ -121,7 +123,7 @@ class TreeageCore:
                 filedate = mean(lines_dates)
             else:  # time of most recent content modification.
                 filedate = os.stat(path).st_mtime
-            all_dates[path] = filedate
+            self.all_dates[path] = filedate
             return filedate
 
     def tree_format(self, parent, dir_name):
@@ -138,6 +140,16 @@ class TreeageCore:
         """Render tree"""
         name = tree["name"]
         children = tree["children"]
+        if self.after:
+            children = [x for x in children if not x["date"] or x["date"] > self.after]
+            self.all_dates = {
+                k: v for (k, v) in self.all_dates.items() if v > self.after
+            }
+        if self.before:
+            children = [x for x in children if not x["date"] or x["date"] < self.before]
+            self.all_dates = {
+                k: v for (k, v) in self.all_dates.items() if v < self.before
+            }
         res = [name] + fp.reduce(
             lambda l, r: l + r,
             map(lambda arg: self.render(len(children))(*arg), enumerate(children)),
@@ -164,8 +176,8 @@ class TreeageCore:
         if not date:
             return ""
         rgb_max = 255
-        min_date = min(all_dates.values())
-        max_date = max(all_dates.values())
+        min_date = min(self.all_dates.values())
+        max_date = max(self.all_dates.values())
 
         step_lin = (max_date - min_date) / rgb_max
         try:
@@ -198,8 +210,10 @@ class TreeageCore:
             fullpath = ""
             for i in range(0, index + 1, 4):
                 fullpath = os.path.join(fullpath, walk[i])
-            if fullpath in all_dates:
-                res.append("{} {}".format(self.render_date(all_dates[fullpath]), line))
+            if fullpath in self.all_dates:
+                res.append(
+                    "{} {}".format(self.render_date(self.all_dates[fullpath]), line)
+                )
             else:
                 res.append("       " + line)
         return res
