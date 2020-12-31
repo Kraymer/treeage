@@ -48,7 +48,7 @@ Usage
       -h, --help           Show this message and exit.    
 
     Examples:
-      treeage --maxdepth 2 --before "01 jan 2018"../qifqif
+      treeage --maxdepth 2 --before "01 jan 2018" ../my_git_repo
       treeage --include "*.py" --after "3 month ago" .
 
 
@@ -56,7 +56,7 @@ Usage
 Screenshot
 ----------
 
-.. image:: https://github.com/Kraymer/treeage/blob/master/docs/screenshot.png
+.. image:: https://raw.githubusercontent.com/Kraymer/treeage/master/docs/screenshot.png
 
 ----
 
