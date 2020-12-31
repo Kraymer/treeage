@@ -60,6 +60,6 @@ Screenshot
 
 ----
 
-.. rubric:: 
+.. rubric:: Footnotes
 
 .. [#f1] file age is computed by averaging last modification date of its lines
