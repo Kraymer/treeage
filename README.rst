@@ -35,13 +35,22 @@ Usage
       indicated for each file.    
 
     Options:
-      --maxdepth LEVELS  Descend at most LEVELS (a non-negative integer) levels of
-                         directories below the seed DIRECTORY    
+      --maxdepth LEVELS    Descend at most LEVELS (a non-negative integer) levels
+                           of directories below the seed DIRECTORY    
 
-      --include GLOB     Search only files whose base name matches GLOB (using
-                         wildcard matching)    
+      --include GLOB       List only files whose base name matches GLOB (using
+                           wildcard matching)    
 
-      -h, --help         Show this message and exit.    
+      --before DATE        List only files whose age is older than DATE
+      --after DATE         List only files whose age is lower than DATE
+      -v, --verbosity LVL  Either CRITICAL, ERROR, WARNING, INFO or DEBUG
+      --version            Show the version and exit.
+      -h, --help           Show this message and exit.    
+
+    Examples:
+      treeage --maxdepth 2 --before "01 jan 2018"../qifqif
+      treeage --include "*.py" --after "3 month ago" .
+
 
 
 Screenshot
