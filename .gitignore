@@ -6,4 +6,6 @@
 .pytest_cache/
 .tox
 __pycache__
+build/
+dist/
 venv
