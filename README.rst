@@ -4,6 +4,8 @@
    :target: https://pypi.python.org/pypi/treeage
 .. image:: https://codecov.io/gh/Kraymer/treeage/branch/master/graph/badge.svg?token=NWHZ0T10O2
    :target: https://codecov.io/gh/Kraymer/treeage
+.. image:: https://pepy.tech/badge/treeage  
+   :target: https://pepy.tech/project/treeage
 .. image:: https://img.shields.io/badge/releases-atom-orange.svg
    :target: https://github.com/Kraymer/treeage/releases.atom
 
