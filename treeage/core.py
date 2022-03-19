@@ -67,7 +67,7 @@ def abbr_date(date):
 
 
 class TreeageCore:
-    def __init__(self, root, maxdepth, include_glob, before, after):
+    def __init__(self, root, maxdepth, include_glob, exclude_glob, before, after):
         """Render aged tree for dirpath"""
         self.all_dates = {}
         self.maxdepth = maxdepth
@@ -76,7 +76,8 @@ class TreeageCore:
         self.root = root
         self.repo_path = repo_path_for(self.root)
         self.repo = Repo(self.repo_path)
-        self.glob = include_glob
+        self.include_glob = include_glob
+        self.exclude_glob = exclude_glob
         self.repo_files = set(
             os.path.join(self.repo_path, str(x)) for x in list_paths(self.repo.tree())
         )
@@ -97,8 +98,12 @@ class TreeageCore:
             [x for x in os.listdir(path) if os.path.isdir(os.path.join(path, x))]
         )
         children |= set(
-            glob.iglob(os.path.join(path, self.glob)) if self.glob else os.listdir(path)
+            glob.iglob(os.path.join(path, self.include_glob))
+            if self.include_glob
+            else os.listdir(path)
         )
+        if self.exclude_glob:
+            children -= set(glob.iglob(os.path.join(path, self.exclude_glob)))
         paths = set(os.path.join(path, fname) for fname in children) & self.repo_files
         return [
             self.tree_format(path, os.path.basename(fname)) for fname in sorted(paths)
@@ -108,7 +113,7 @@ class TreeageCore:
         """Return estimated date of filepath by averaging editing dates of each
         line.
         """
-        print(u"processing {}".format(path), end="")
+        print("processing {}".format(path), end="")
         print(term.clear_last)
         if os.path.isfile(path) and path in self.repo_files:
             lines_dates = []

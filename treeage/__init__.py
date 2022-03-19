@@ -51,9 +51,17 @@ treeage --include "*.py" --after "3 month ago" .
 )
 @click.option(
     "--include",
+    "-i",
     "include_glob",
     metavar="GLOB",
     help=("List only files whose base name matches GLOB (using wildcard matching)"),
+)
+@click.option(
+    "--exclude",
+    "-e",
+    "exclude_glob",
+    metavar="GLOB",
+    help=("Exclude files whose base name matches GLOB (using wildcard matching)"),
 )
 @click.option(
     "--before", metavar="DATE", help=("List only files whose age is older than DATE")
@@ -63,8 +71,13 @@ treeage --include "*.py" --after "3 month ago" .
 )
 @click_log.simple_verbosity_option(logger)
 @click.version_option(__version__)
-def treeage_cli(directory, maxdepth, include_glob, before, after):
+def treeage_cli(directory, maxdepth, include_glob, exclude_glob, before, after):
     directory = os.path.abspath(directory)
     TreeageCore(
-        directory, maxdepth, include_glob, parse_date(before), parse_date(after)
+        directory,
+        maxdepth,
+        include_glob,
+        exclude_glob,
+        parse_date(before),
+        parse_date(after),
     ).dump()
