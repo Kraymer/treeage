@@ -31,27 +31,28 @@ Usage
 
 ::
 
-    Usage: treeage.py [OPTIONS] DIRECTORY    
+  Usage: treeage.py [OPTIONS] DIRECTORY  
 
-      Lists contents of directories in a tree-like format with age metric
-      indicated for each file.    
+    Lists contents of directories in a tree-like format with age metric
+    indicated for each file.  
 
-    Options:
-      --maxdepth LEVELS    Descend at most LEVELS (a non-negative integer) levels
-                           of directories below the seed DIRECTORY    
-
-      --include GLOB       List only files whose base name matches GLOB (using
-                           wildcard matching)    
-
-      --before DATE        List only files whose age is older than DATE
-      --after DATE         List only files whose age is lower than DATE
-      -v, --verbosity LVL  Either CRITICAL, ERROR, WARNING, INFO or DEBUG
-      --version            Show the version and exit.
-      -h, --help           Show this message and exit.    
+  Options:
+    --maxdepth LEVELS    Descend at most LEVELS (a non-negative integer) levels
+                         of directories below the seed DIRECTORY
+    -i, --include GLOB   List only files whose base name matches GLOB (using
+                         wildcard matching)
+    -e, --exclude GLOB   Exclude files whose base name matches GLOB (using
+                         wildcard matching)
+    --before DATE        List only files whose age is older than DATE
+    --after DATE         List only files whose age is lower than DATE
+    -v, --verbosity LVL  Either CRITICAL, ERROR, WARNING, INFO or DEBUG
+    --version            Show the version and exit.
+    -h, --help           Show this message and exit.  
 
     Examples:
-      treeage --maxdepth 2 --before "01 jan 2018" ../my_git_repo
-      treeage --include "*.py" --after "3 month ago" .
+    treeage --maxdepth 2 --before "01 jan 2018"../qifqif
+    treeage --include "*.py" --after "3 month ago" .
+
 
 
 
