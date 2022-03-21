@@ -24,7 +24,7 @@ treeage
 Install
 -------
 
-``treeage`` is written for Python 3.5+, install with pip via ``pip3 install treeage`` command.
+``treeage`` is written for Python 3.6+, install with pip via ``pip3 install treeage`` command.
 
 Usage
 -----

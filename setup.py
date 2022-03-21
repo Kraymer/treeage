@@ -22,7 +22,7 @@ def read_rsrc(filename, pypi_compat=False):
     with codecs.open(os.path.join(DIRPATH, filename), encoding="utf-8") as _file:
         data = _file.read().strip()
         if pypi_compat or filename == "README.rst":
-            data = re.sub(r":(\w+\\?)+:", u"", data[data.find(".. pypi") :] or data)
+            data = re.sub(r":(\w+\\?)+:", "", data[data.find(".. pypi") :] or data)
     return data
 
 
@@ -47,6 +47,7 @@ setup(
     ],
     entry_points={"console_scripts": ["treeage = treeage:treeage_cli"]},
     install_requires=read_rsrc("requirements.txt").split("\n"),
+    python_requires=">=3.6",
     extras_require={
         "test": [
             "coverage>5",
